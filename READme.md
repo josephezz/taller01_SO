@@ -34,10 +34,10 @@ El programa inicia desde la función `main()`, la cual ejecuta la función encar
 Primero se obtiene el identificador del proceso actual utilizando:
 
 ```c
-pid_t pidProceso = getpid();
+pid_t pidHijo = getpid();
 ```
 
-Esta llamada permite conocer el PID asignado por el sistema operativo al programa que se encuentra en ejecución.
+Esta llamada permite conocer el PID asignado por el sistema operativo al programa que se encuentra en ejecución(Denominado por nosotros como "Hijo").
 
 Posteriormente, se obtiene el identificador del proceso padre mediante:
 
