@@ -4,13 +4,26 @@
 #include <sys/types.h>
 #include "funciones.h"
 
+/**
+ * @file codigo1.c
+ * @brief Obtiene y muestra los PID del proceso y su padre.
+ */
 
+/**
+ * @brief Función principal.
+ * @param argc Cantidad de argumentos.
+ * @param argv Argumentos del programa.
+ * @return Código retornado por mostrarProcesos().
+ */
 int main(int argc, char *argv[])
 {
     return mostrarProcesos();
-    
 }
 
+/**
+ * @brief Obtiene y muestra los PID de los procesos.
+ * @return 6 si funciona, 1 si ocurre un error.
+ */
 int mostrarProcesos()
 {
     pid_t pidHijo = getpid();
