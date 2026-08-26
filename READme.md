@@ -177,3 +177,114 @@ La implementación permitió comprender el funcionamiento básico de las llamada
 Mediante el uso de `getpid()`, `getppid()` y `write()` fue posible obtener información del proceso en ejecución y realizar una salida utilizando una llamada al sistema.
 
 Además, la verificación del valor de retorno permitió comprobar que el programa no solamente funciona en condiciones normales, sino que también considera posibles errores durante su ejecución.
+
+
+---
+
+# Programa 2: Comparación entre printf() y write()
+
+## Objetivo
+
+Realizar un segundo programa que escriba el mismo mensaje utilizando primero `printf()` y después `write()`, con el objetivo de observar la diferencia entre una función de biblioteca y una llamada al sistema.
+
+---
+
+# Implementación
+
+Para este programa se utilizó el siguiente mensaje:
+
+```c
+const char *mensaje = "Mensaje escrito con printf() y luego con write().";
+```
+
+Primero se utilizó:
+
+```c
+printf("%s", mensaje);
+```
+
+y posteriormente:
+
+```c
+write(STDOUT_FILENO, mensaje, strlen(mensaje));
+```
+
+No se utilizó `fflush()` ni se agregó un salto de línea al final del mensaje, siguiendo las indicaciones del taller.
+
+Al principio esperábamos que el mensaje de `printf()` apareciera primero porque esa instrucción se encuentra antes en el código. Sin embargo, al ejecutar el programa se observó que el orden de salida no era el esperado.
+
+---
+
+# Prueba y observación
+
+El programa se compiló utilizando:
+
+```bash
+gcc -Wall src/codigo2.c -o codigo2
+```
+
+Después se ejecutó con:
+
+```bash
+./codigo2
+```
+
+Durante la prueba se observó que `write()` podía mostrar su contenido antes que `printf()`, aunque `printf()` se ejecutaba primero.
+
+Esto inicialmente generó confusión porque el orden de las instrucciones parecía indicar que `printf()` debía aparecer primero.
+
+---
+
+# Análisis
+
+Después de revisar el funcionamiento de las dos funciones, se comprendió que `printf()` es una función de biblioteca que utiliza un búfer para manejar la salida.
+
+Como no se utilizó `fflush()` y el mensaje no termina con un salto de línea, el texto escrito con `printf()` puede permanecer temporalmente en ese búfer.
+
+Por otro lado, `write()` realiza una llamada al sistema para escribir en la salida estándar. Por esta razón, su mensaje puede aparecer antes.
+
+El orden observado se puede representar de la siguiente manera:
+
+```text
+printf()
+   |
+   v
+Búfer de la biblioteca
+   |
+   |
+write()
+   |
+   v
+Kernel
+   |
+   v
+Salida estándar
+```
+
+Cuando el programa termina, el contenido pendiente del búfer de `printf()` puede ser enviado a la salida.
+
+---
+
+# Manejo de errores
+
+También se verificó el valor de retorno de `write()`:
+
+```c
+if (resultado == -1)
+{
+    perror("Error al escribir con write");
+    return 1;
+}
+```
+
+Si la llamada falla, `perror()` muestra la causa del error y el programa termina con un código diferente de cero.
+
+---
+
+# Conclusión
+
+La prueba permitió comprobar que `printf()` y `write()` no funcionan de la misma manera.
+
+Aunque `printf()` aparece primero en el código, su contenido puede quedar temporalmente almacenado en un búfer. `write()`, en cambio, realiza la escritura mediante el sistema operativo.
+
+La observación inicial no coincidió con lo que esperábamos, pero permitió entender mejor la diferencia entre una función de biblioteca y una llamada al sistema y la importancia del búfer de salida.
